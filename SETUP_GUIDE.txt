@@ -1,0 +1,26 @@
+SMART RESUME ANALYZER — NLP-ENHANCED VERSION
+
+1. Extract the ZIP file.
+2. Open the smart_resume_analyzer folder in VS Code.
+3. Open Terminal > New Terminal.
+4. Create a virtual environment:
+   python -m venv .venv
+5. If PowerShell blocks activation, run:
+   Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+   .\.venv\Scripts\Activate.ps1
+6. Install all libraries, including spaCy:
+   python -m pip install --upgrade pip
+   pip install -r requirements.txt
+7. Run the app:
+   python app.py
+8. Open this address in your browser:
+   http://127.0.0.1:5000
+
+If Python is not recognized, install it from https://www.python.org/downloads/windows/ and select "Add Python to PATH". Restart VS Code after installation.
+
+NLP enhancement:
+- spaCy tokenization + PhraseMatcher detects skills from an editable vocabulary.
+- Paste a job description (optional) to extract known skills and compare the resume against them.
+- No separate spaCy language model download is required.
+
+Privacy/accuracy note: the app stores analysis summaries in a local SQLite database, not the uploaded resume file or extracted raw text. Scores are educational estimates and are not scores from a commercial ATS.
