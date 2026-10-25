@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Analysis Results · Smart Resume Analyzer{% endblock %}
+{% block content %}
+<div class="results-header">
+  <div><p class="kicker">ANALYSIS COMPLETE</p><h1>Your resume insights</h1><p class="muted">{{ result.filename }} · {{ result.target_role }} · {{ result.created_at }}</p></div>
+  <a class="button button-secondary" href="{{ url_for('index') }}">← Analyze another</a>
+</div>
+
+<section class="score-grid">
+  <article class="score-card primary-score">
+    <div class="score-top"><span>Resume score</span><span class="score-tag">COMPLETENESS</span></div>
+    <div class="score-line"><strong>{{ result.resume_score }}</strong><span>/100</span></div>
+    <div class="meter"><span style="width: {{ result.resume_score }}%"></span></div>
+    <p>Based on ten structural and content checks.</p>
+  </article>
+  <article class="score-card">
+    <div class="score-top"><span>Role keyword match</span><span class="score-tag">SKILLS</span></div>
+    <div class="score-line"><strong>{{ result.ats_score }}</strong><span>/100</span></div>
+    <div class="meter meter-blue"><span style="width: {{ result.ats_score }}%"></span></div>
+    <p>{{ result.matched_skills|length }} of {{ result.required_skills|length }} required skills detected using spaCy. Source: {{ result.comparison_source }}.</p>
+  </article>
+</section>
+
+<div class="results-columns">
+  <section class="panel">
+    <div class="panel-heading"><div><p class="kicker">ROLE ALIGNMENT</p><h2>Skill match</h2></div></div>
+    {% if result.matched_skills %}
+    <div class="skill-list">{% for skill in result.matched_skills %}<span class="skill-chip matched">✓ {{ skill }}</span>{% endfor %}</div>
+    {% else %}<p class="muted">No skills from this starter list were detected. Check your resume wording and selected role.</p>{% endif %}
+    <div class="subheading"><h3>Skills to review</h3><span class="count-badge">{{ result.missing_skills|length }}</span></div>
+    {% if result.missing_skills %}
+    <div class="skill-list">{% for skill in result.missing_skills %}<span class="skill-chip missing">+ {{ skill }}</span>{% endfor %}</div>
+    {% else %}<p class="muted">All skills in the current starter list were detected.</p>{% endif %}
+    <p class="small-note">Only add skills you genuinely have. A missing keyword does not necessarily mean you lack the underlying skill.</p>
+    {% if result.job_description_skills %}
+    <div class="subheading"><h3>Skills extracted from job description</h3><span class="count-badge">{{ result.job_description_skills|length }}</span></div>
+    <div class="skill-list">{% for skill in result.job_description_skills %}<span class="skill-chip">{{ skill }}</span>{% endfor %}</div>
+    {% endif %}
+  </section>
+
+  <section class="panel">
+    <div class="panel-heading"><div><p class="kicker">NEXT STEPS</p><h2>Smart feedback</h2></div><span class="bulb">✦</span></div>
+    <ol class="suggestion-list">
+      {% for suggestion in result.suggestions %}
+      <li><span class="suggestion-check">↗</span><span>{{ suggestion }}</span></li>
+      {% endfor %}
+    </ol>
+  </section>
+</div>
+
+<section class="panel">
+  <div class="panel-heading"><div><p class="kicker">NLP EXTRACTION</p><h2>Skills detected in your resume</h2></div><span class="score-tag">spaCy</span></div>
+  {% if result.resume_skills %}
+  <div class="skill-list">{% for skill in result.resume_skills %}<span class="skill-chip matched">{{ skill }}</span>{% endfor %}</div>
+  {% else %}
+  <p class="muted">No skills from the current supported vocabulary were detected. This does not mean the resume contains no skills; add aliases or update the skill vocabulary in app.py.</p>
+  {% endif %}
+  <p class="small-note">NLP here uses spaCy tokenization and PhraseMatcher over an editable skill vocabulary. It is not a semantic understanding model.</p>
+</section>
+
+<section class="panel checklist-panel">
+  <div class="panel-heading"><div><p class="kicker">TRANSPARENT SCORING</p><h2>Resume checklist</h2></div><span class="small-note">10 points per check</span></div>
+  <div class="check-grid">
+    {% for item in result.score_breakdown %}
+    <div class="check-item"><span class="check-state {{ 'pass' if item.passed else 'fail' }}">{{ '✓' if item.passed else '–' }}</span><span>{{ item.name }}</span><strong>{{ item.points }}/10</strong></div>
+    {% endfor %}
+  </div>
+  <div class="subheading"><h3>ATS readability checks</h3></div>
+  <div class="check-grid">
+    {% for name, passed in result.format_checks %}
+    <div class="check-item"><span class="check-state {{ 'pass' if passed else 'fail' }}">{{ '✓' if passed else '–' }}</span><span>{{ name }}</span><strong>{{ 'Pass' if passed else 'Review' }}</strong></div>
+    {% endfor %}
+  </div>
+</section>
+
+<div class="bottom-actions">
+  <a class="button button-primary" href="{{ url_for('download_report', analysis_id=result.analysis_id) }}">↓ Download PDF report</a>
+  <a class="button button-secondary" href="{{ url_for('history') }}">View analysis history →</a>
+</div>
+<p class="disclaimer">Important: This is a learning prototype. Its scores are heuristic estimates, not a real ATS vendor score or a prediction of hiring outcomes.</p>
+{% endblock %}

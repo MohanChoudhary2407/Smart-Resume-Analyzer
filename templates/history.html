@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Analysis History · Smart Resume Analyzer{% endblock %}
+{% block content %}
+<div class="results-header">
+  <div><p class="kicker">YOUR WORKSPACE</p><h1>Analysis history</h1><p class="muted">Recent resume score summaries stored on this device.</p></div>
+  <a class="button button-primary" href="{{ url_for('index') }}">+ New analysis</a>
+</div>
+<section class="panel history-panel">
+  {% if items %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Resume</th><th>Target role</th><th>Resume score</th><th>Keyword match</th><th>Date</th><th>Report</th></tr></thead>
+      <tbody>
+      {% for item in items %}
+        <tr>
+          <td class="filename-cell">{{ item.filename }}</td>
+          <td>{{ item.target_role }}</td>
+          <td><span class="table-score">{{ item.resume_score }}/100</span></td>
+          <td><span class="table-score blue-score">{{ item.ats_score }}/100</span></td>
+          <td>{{ item.created_at }}</td>
+          <td><a class="text-link" href="{{ url_for('download_report', analysis_id=item.id) }}">PDF ↗</a></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="small-note">History stores scores, skill summaries, suggestions, filenames, and timestamps—not the uploaded resume file or its full extracted text.</p>
+  {% else %}
+  <div class="empty-state"><span>▤</span><h2>No analyses yet</h2><p>Upload a resume to create your first report.</p><a class="button button-primary" href="{{ url_for('index') }}">Analyze a resume</a></div>
+  {% endif %}
+</section>
+{% endblock %}

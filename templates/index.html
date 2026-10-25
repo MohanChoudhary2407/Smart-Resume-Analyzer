@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Analyze Resume · Smart Resume Analyzer{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="eyebrow"><span class="pulse"></span> CAREER INTELLIGENCE WORKSPACE</div>
+  <h1>Your next opportunity<br><span>starts with a stronger resume.</span></h1>
+  <p class="hero-copy">Get a structured resume review, role-specific keyword matching, and practical feedback in one place.</p>
+  <div class="hero-pills">
+    <span>✓ PDF & DOCX</span><span>✓ Role-based skills</span><span>✓ spaCy NLP skill extraction</span><span>✓ Actionable feedback</span>
+  </div>
+</section>
+
+<section class="workspace">
+  <div class="section-heading">
+    <div><p class="kicker">GET STARTED</p><h2>Analyze your resume</h2></div>
+    <span class="step-label">01 / UPLOAD</span>
+  </div>
+  <form action="{{ url_for('analyze') }}" method="post" enctype="multipart/form-data" id="upload-form">
+    <label class="field-label" for="resume">Resume document</label>
+    <label class="dropzone" for="resume" id="dropzone">
+      <input type="file" id="resume" name="resume" accept=".pdf,.docx" required>
+      <span class="upload-icon">↑</span>
+      <strong id="file-name">Drop your resume here or <span>browse files</span></strong>
+      <small>PDF or DOCX · Maximum {{ max_upload_mb }} MB</small>
+    </label>
+    <div class="form-row">
+      <div class="field">
+        <label class="field-label" for="target_role">Target job role</label>
+        <select id="target_role" name="target_role" required>
+          {% for role in roles %}
+          <option value="{{ role }}">{{ role }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="field field-note">
+        <span class="note-icon">i</span>
+        <p>Choose the role you want to target. The analyzer compares your resume with an editable starter list of relevant skills.</p>
+      </div>
+    </div>
+    <div class="field job-description-field">
+      <label class="field-label" for="job_description">Job description <span class="muted">(optional, recommended)</span></label>
+      <textarea id="job_description" name="job_description" rows="5" maxlength="20000" placeholder="Paste the full job description here to compare its required skills with your resume."></textarea>
+      <small>Up to 20,000 characters. Recognized skills will be compared with your resume and used in the match score.</small>
+    </div>
+    <button class="button button-primary full-button" type="submit" id="analyze-button">
+      Analyze resume <span>→</span>
+    </button>
+  </form>
+  <p class="privacy-note"><span>♢</span> Your uploaded file and extracted text are not stored. Analysis scores and skill summaries are saved in local SQLite history.</p>
+</section>
+
+<section class="feature-grid">
+  <article class="feature-card"><span class="feature-number">01</span><h3>Resume score</h3><p>Review completeness, key sections, and readable length.</p></article>
+  <article class="feature-card"><span class="feature-number">02</span><h3>ATS keyword check</h3><p>Find which starter skills match your selected role.</p></article>
+  <article class="feature-card"><span class="feature-number">03</span><h3>Smart feedback</h3><p>Get practical next steps based on detected gaps.</p></article>
+</section>
+{% endblock %}
